@@ -1,0 +1,19 @@
+{
+  "name": "url-shortener",
+  "version": "1.0.0",
+  "description": "A service which shortens URLs",
+  "main": "app.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/willHol/url-shortener.git"
+  },
+  "author": "William Holmes",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/willHol/url-shortener/issues"
+  },
+  "homepage": "https://github.com/willHol/url-shortener#readme"
+}
