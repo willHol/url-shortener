@@ -1,3 +1,4 @@
+// getURLById returns the document with the given id, or throws an error
 exports.getURLById = async function (dbPromise, collectionName, id) {
 	let db, collection, entry, entriesArray;
 
@@ -19,6 +20,7 @@ exports.getURLById = async function (dbPromise, collectionName, id) {
 	}
 }
 
+// createURL first checks if a shortened url already exists, otherwise it creates one
 exports.createURL = async function (dbPromise, collectionName, url, hostname) {
 	let db, collection, id, urlId;
 
@@ -52,6 +54,7 @@ exports.createURL = async function (dbPromise, collectionName, url, hostname) {
 	return {original_url: url, short_url: hostname + urlId};
 }
 
+// getDBPromise returns a promise which resolves to the db
 exports.getDBPromise = async function(url, mongo) {
 	return mongo.connect(url);
 }
