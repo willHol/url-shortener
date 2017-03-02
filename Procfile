@@ -1,0 +1,1 @@
+web: node --harmony-async-await app.js
