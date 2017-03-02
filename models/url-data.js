@@ -1,4 +1,4 @@
-exports.getURLById = async function(dbPromise, collectionName, id) {
+exports.getURLById = async function (dbPromise, collectionName, id) {
 	let db, collection, entry, entriesArray;
 
 	// Resolve the database, then the collection
@@ -7,14 +7,8 @@ exports.getURLById = async function(dbPromise, collectionName, id) {
 
 
 	// Attempt to retrieve entry with given id
-	try {
-		entry = await collection.find({ _id: id });
-		entriesArray = await entry.toArray();
-	}
-	catch (error) {
-		console.log(error.toString());
-	}
-
+	entry = await collection.find({ urlId: id });
+	entriesArray = await entry.toArray();
 
 	// If entry exists return the entry promise, else throw an exception
 	if (entriesArray.length > 0) {
@@ -28,23 +22,37 @@ exports.getURLById = async function(dbPromise, collectionName, id) {
 exports.createURL = async function (dbPromise, collectionName, url, hostname) {
 	let db, collection, id, urlId;
 
-	id = ObjectId();
-	urlId = id.slice(0, 4);
+	id = new require('mongodb').ObjectID();
+	urlId = id.toHexString().slice(0, 8);
+	url = url.slice(5);
 
 	// Resolve the database, then the collection
 	db = await dbPromise;
 	collection = await db.collection(collectionName);
 
-	// Create the new URL document
-	await collection.insert({
-		_id: id,
-		urlId: urlId,
-		original_url: url,
-		short_url: `hostname/${urlId}`
-	});
+	// Attempt to retrieve entry with given url
+	entry = await collection.find({ original_url: url });
+	entriesArray = await entry.toArray();
+
+	// Avoid creating a new document if the url is already in the db
+	if (entriesArray.length < 1) {
+		// Create the new URL document
+		await collection.insert({
+			_id: id,
+			urlId: urlId,
+			original_url: url,
+			short_url: hostname + urlId
+		});
+	}
+	else {
+		// Retrieve the already existent urlId
+		urlId = entriesArray[0].urlId;
+	}
+
+	return {original_url: url, short_url: hostname + urlId};
 }
 
-exports.getDBPromise = async function(url) {
+exports.getDBPromise = async function(url, mongo) {
 	return mongo.connect(url);
 }
 
