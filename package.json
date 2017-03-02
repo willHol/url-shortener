@@ -18,8 +18,7 @@
   "homepage": "https://github.com/willHol/url-shortener#readme",
   "dependencies": {
     "express": "^4.14.1",
-    "mongodb": "^2.2.24",
-    "promised-mongo": "^1.2.0"
+    "mongodb": "^2.2.24"
   },
   "devDependencies": {
     "chai": "^3.5.0",
