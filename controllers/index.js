@@ -15,7 +15,6 @@ router.get('/:id', (request, response) => {
 	
 	// ID must be an 8 character hexadecimal string
 	if (/[0-9a-f]{8}/.test(id)) {
-		// Valid id
 		urlData.getURLById(dbPromise, 'URLs', id)
 			.then(function resolved(urlObj) {
 				// Handles a resolved promise containing 
@@ -28,14 +27,12 @@ router.get('/:id', (request, response) => {
 			});
 	}
 	else {
-		// Invalid id
 		response.sendStatus(404);
 	}
 });
 
 // Handles GET requests to /new which creates a new  URL db entry
 router.get('/new/*', (request, response) => {
-	// url is the part following /new/...
 	const url = require('url').parse(request.url).pathname;
 	const hostname = request.headers.host + '/';
 

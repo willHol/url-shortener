@@ -39,7 +39,6 @@ exports.createURL = async function (dbPromise, collectionName, url, hostname) {
 
 	// Avoid creating a new document if the shortened-url is already in the db
 	if (entriesArray.length < 1) {
-		// Insert the new URL document
 		await collection.insert({
 			_id: id,
 			urlId: urlId,
@@ -48,11 +47,9 @@ exports.createURL = async function (dbPromise, collectionName, url, hostname) {
 		});
 	}
 	else {
-		// Retrieve the already existent document
 		urlId = entriesArray[0].urlId;
 	}
 
-	// JSON compatible response, cointaining both shortened and unshortened URLs
 	return {original_url: url, short_url: hostname + urlId};
 }
 
