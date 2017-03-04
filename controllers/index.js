@@ -3,20 +3,29 @@ const urlMatch = require('../helpers/url-match');
 const urlData = require('../models/url-data');
 const mongo = require('mongodb').MongoClient;
 
-// Initialise
+// Initialise the router, mongodb URL and resolve the db connection
 const router = express.Router();
 const URL = process.env.MONGOLAB_URI;
 const dbPromise = urlData.getDBPromise(URL, mongo).catch(console.log);
 
-// Handles the shortened urls
+// Handles GET requests with a particular id (shortened urls)
 router.get('/:id', (request, response) => {
-	let id = request.params.id;
+	// get the hexadecimal identifier for the route
+	const id = request.params.id;
 	
+	// ID must be an 8 character hexadecimal string
 	if (/[0-9a-f]{8}/.test(id)) {
 		// Valid id
-		urlData.getURLById(dbPromise, 'URLs', id).then((urlObj) => {
-			response.redirect(urlObj['original_url']);
-		}).catch(console.log);
+		urlData.getURLById(dbPromise, 'URLs', id)
+			.then(function resolved(urlObj) {
+				// Handles a resolved promise containing 
+				// an redirecting to the original url
+				response.redirect(urlObj['original_url']);
+			}, function rejected(error) {
+				// Handles any errors produced by the 
+				// exported async await function getURLById
+				console.log(error);
+			});
 	}
 	else {
 		// Invalid id
@@ -24,20 +33,24 @@ router.get('/:id', (request, response) => {
 	}
 });
 
-// Handles the urls which are to be shortened
+// Handles GET requests to /new which creates a new  URL db entry
 router.get('/new/*', (request, response) => {
-	const details = require('url').parse(request.url);
-	let url = details.pathname;
-	let hostname = request.headers.host + '/';
+	// url is the part following /new/...
+	const url = require('url').parse(request.url).pathname;
+	const hostname = request.headers.host + '/';
 
 	if (urlMatch(url)) {
-		// Valid url
+		// URL passes regex test, confirming it is a valid URL
 		urlData.createURL(dbPromise, 'URLs', url, hostname)
-		.then(function resolved(json) {
-			response.json(json);	
-		}, function rejected(error) {
-			console.log(error);
-		});
+			.then(function resolved(json) {
+				// Handles a resolved promise containing 
+				// an object to send as a JSON response
+				response.json(json);	
+			}, function rejected(error) {
+				// Handles any errors produced by the 
+				// exported async await function createURL
+				console.log(error);
+			});
 	}
 	else {
 		// Invalid url (url does not pass regex test)

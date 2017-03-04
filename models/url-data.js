@@ -19,25 +19,27 @@ exports.getURLById = async function (dbPromise, collectionName, id) {
 	}
 }
 
-// createURL first checks if a shortened url already exists, otherwise it creates one
+// createURL first checks if a shortened url already exists, if not it creates one
 exports.createURL = async function (dbPromise, collectionName, url, hostname) {
 	let db, collection, id, urlId;
 
+	// Take the first 8 digits of a unique hexadecimal objectId to use as an shortened identifier
 	id = new require('mongodb').ObjectID();
 	urlId = id.toHexString().slice(0, 8);
+	
 	url = url.slice(5);
 
 	// Resolve the database, then the collection
 	db = await dbPromise;
 	collection = await db.collection(collectionName);
 
-	// Attempt to retrieve entry with given url
+	// Attempt to retrieve entry with given unshortened-url
 	entry = await collection.find({ original_url: url });
 	entriesArray = await entry.toArray();
 
-	// Avoid creating a new document if the url is already in the db
+	// Avoid creating a new document if the shortened-url is already in the db
 	if (entriesArray.length < 1) {
-		// Create the new URL document
+		// Insert the new URL document
 		await collection.insert({
 			_id: id,
 			urlId: urlId,
@@ -50,6 +52,7 @@ exports.createURL = async function (dbPromise, collectionName, url, hostname) {
 		urlId = entriesArray[0].urlId;
 	}
 
+	// JSON compatible response, cointaining both shortened and unshortened URLs
 	return {original_url: url, short_url: hostname + urlId};
 }
 
