@@ -4,7 +4,8 @@
   "description": "A service which shortens URLs",
   "main": "app.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --harmony-async-await",
+    "start": "node app.js --harmony-async-await"
   },
   "repository": {
     "type": "git",

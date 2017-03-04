@@ -6,7 +6,6 @@ exports.getURLById = async function (dbPromise, collectionName, id) {
 	db = await dbPromise;
 	collection = await db.collection(collectionName);
 
-
 	// Attempt to retrieve entry with given id
 	entry = await collection.find({ urlId: id });
 	entriesArray = await entry.toArray();
@@ -47,7 +46,7 @@ exports.createURL = async function (dbPromise, collectionName, url, hostname) {
 		});
 	}
 	else {
-		// Retrieve the already existent urlId
+		// Retrieve the already existent document
 		urlId = entriesArray[0].urlId;
 	}
 
