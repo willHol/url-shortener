@@ -9,7 +9,7 @@ const getDBPromise = require('../models/getDBPromise.js');
 // Initialise the router, mongodb URL and resolve the db connection
 const router = express.Router();
 const URL = process.env.MONGOLAB_URI;
-const dbPromise = urlData.getDBPromise(URL, mongo).catch(console.log);
+const dbPromise = getDBPromise(URL, mongo).catch(console.log);
 
 // Handles GET requests with a particular id (shortened urls)
 router.get('/:id', (request, response) => {
@@ -17,7 +17,7 @@ router.get('/:id', (request, response) => {
 
   // ID must be an 8 character hexadecimal string
   if (/[0-9a-f]{8}/.test(id)) {
-    urlData.getURLById(dbPromise, 'URLs', id)
+    getURLById(dbPromise, 'URLs', id)
       .then((urlObj) => {
         // Succesfully retrieved the URL
         response.redirect(urlObj.original_url);
@@ -40,7 +40,7 @@ router.get('/new/*', (request, response) => {
 
   if (urlMatch(url)) {
     // URL passes regex test, confirming it is a valid URL
-    urlData.createURL(dbPromise, 'URLs', url, hostname)
+    createURL(dbPromise, 'URLs', url, hostname)
       .then((jsonURL) => {
         // URL successfully created
         response.json(jsonURL);
