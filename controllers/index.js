@@ -1,10 +1,9 @@
 const express = require('express');
 const urlMatch = require('../helpers/url-match');
-// const urlData = require('../models/url-data');
-const createURL = require('../models/createURL');
-const getURLById = require('../models/getURLById');
+const createURL = require('../models/create-url');
+const getURLById = require('../models/get-url-by-id');
 const mongo = require('mongodb').MongoClient;
-const getDBPromise = require('../models/getDBPromise.js');
+const getDBPromise = require('../models/get-db-promise');
 
 // Initialise the router, mongodb URL and resolve the db connection
 const router = express.Router();
