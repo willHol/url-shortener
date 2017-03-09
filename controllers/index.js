@@ -10,23 +10,27 @@ const dbPromise = urlData.getDBPromise(URL, mongo).catch(console.log);
 
 // Handles GET requests with a particular id (shortened urls)
 router.get('/:id', (request, response) => {
-  // get the hexadecimal identifier for the route
   const id = request.params.id;
 
   // ID must be an 8 character hexadecimal string
   if (/[0-9a-f]{8}/.test(id)) {
     urlData.getURLById(dbPromise, 'URLs', id)
       .then((urlObj) => {
+        // Succesfully retrieved the URL
         response.redirect(urlObj.original_url);
-      }, (error) => {
-        console.log(error);
+      })
+      .catch((error) => {
+        // Unable to retrieve a URL with the given id
+        console.error(error);
+        response.sendStatus(500);
       });
   } else {
+    // ID is invalid
     response.sendStatus(404);
   }
 });
 
-// Handles GET requests to /new which creates a new  URL db entry
+// Handles GET requests to /new, which create a new  URL db entry
 router.get('/new/*', (request, response) => {
   const url = require('url').parse(request.url).pathname;
   const hostname = `${request.headers.host}/`;
@@ -35,17 +39,17 @@ router.get('/new/*', (request, response) => {
     // URL passes regex test, confirming it is a valid URL
     urlData.createURL(dbPromise, 'URLs', url, hostname)
       .then((jsonURL) => {
-        // Handles a resolved promise containing
-        // an object to send as a JSON response
+        // URL successfully created
         response.json(jsonURL);
-      }, (error) => {
-        // Handles any errors produced by the
-        // exported async await function createURL
-        console.log(error);
+      })
+      .catch((error) => {
+        // Likely some type of db error
+        console.error(error);
+        response.sendStatus(500);
       });
   } else {
-    // Invalid url (url does not pass regex test)
-    response.json({ original_url: url, short_url: null, error: true });
+    // Not a URL
+    response.status(404).json({ original_url: url, short_url: null, error: true });
   }
 });
 
